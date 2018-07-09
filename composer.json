@@ -12,11 +12,11 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0",
-        "vlucas/phpdotenv": "^2.5"
+        "php": ">=5.3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "*",
+        "vlucas/phpdotenv": "^2.5"
     },
     "autoload": {
         "psr-4": {

@@ -1,0 +1,3 @@
+# blaynmail
+
+BlaynMail(ブレインメール)のAPIのラッパーです。

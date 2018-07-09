@@ -1,0 +1,27 @@
+{
+    "name": "takamoriyamashiro/blaynmail",
+    "description": "blaynmail api wrapper",
+    "keywords":["blaynmail","blayn","brain"],
+    "type":"library",
+    "license": "MIT",
+    "homepage": "https://github.com/takamoriyamashiro/blaynmail.git",
+    "authors": [
+        {
+            "name": "Takamori Yamashiro",
+            "email": "takamori@yama-lab.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "vlucas/phpdotenv": "^2.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "takamoriyamashiro\\Blayn\\": "src/",
+            "takamoriyamashiro\\Blayn\\Tests\\": "test/"
+        }
+    }
+}

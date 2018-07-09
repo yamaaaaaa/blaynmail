@@ -19,9 +19,9 @@ class BlaynMailTest extends TestCase{
 	
 	    if(empty($this->bm)) {
 		    $this->bm = new BlaynMail(
-			    getenv('BRAYNMAIL_ID'),
-			    getenv('BRAYNMAIL_PASSWORD'),
-			    getenv('BRAYNMAIL_APIKEY')
+			    getenv('BLAYNMAIL_ID'),
+			    getenv('BLAYNMAIL_PASSWORD'),
+			    getenv('BLAYNMAIL_APIKEY')
 		    );
 		    $this->assertTrue(!empty($this->bm->getToken()));
 	    }
@@ -30,8 +30,8 @@ class BlaynMailTest extends TestCase{
     public function testConnect(){
 	
 	    $this->bm = new BlaynMail(
-		    getenv('BRAYNMAIL_ID'),
-		    getenv('BRAYNMAIL_PASSWORD'),
+		    getenv('BLAYNMAIL_ID'),
+		    getenv('BLAYNMAIL_PASSWORD'),
 		    'xxxxxxxxxxxxxxx'
 	    );
 	    $this->assertTrue($this->bm->getToken() == 0);

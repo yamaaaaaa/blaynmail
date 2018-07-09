@@ -16,7 +16,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "*",
-        "vlucas/phpdotenv": "^2.5"
+        "vlucas/phpdotenv": "*"
     },
     "autoload": {
         "psr-4": {

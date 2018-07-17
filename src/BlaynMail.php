@@ -1,6 +1,6 @@
 <?php
 
-namespace takamoriyamashiro\Blayn;
+namespace yamaaaaaa\Blayn;
 
 class BlaynMail
 {

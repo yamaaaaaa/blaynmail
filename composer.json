@@ -1,10 +1,10 @@
 {
-    "name": "takamoriyamashiro/blaynmail",
+    "name": "yamaaaaaa/blaynmail",
     "description": "blaynmail api wrapper",
     "keywords":["blaynmail","blayn","brain"],
     "type":"library",
     "license": "MIT",
-    "homepage": "https://github.com/takamoriyamashiro/blaynmail.git",
+    "homepage": "https://github.com/yamaaaaaa/blaynmail.git",
     "authors": [
         {
             "name": "Takamori Yamashiro",
@@ -20,8 +20,8 @@
     },
     "autoload": {
         "psr-4": {
-            "takamoriyamashiro\\Blayn\\": "src/",
-            "takamoriyamashiro\\Blayn\\Tests\\": "test/"
+            "yamaaaaaa\\Blayn\\": "src/",
+            "yamaaaaaa\\Blayn\\Tests\\": "test/"
         }
     }
 }

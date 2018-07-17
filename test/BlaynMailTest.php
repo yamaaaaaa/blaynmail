@@ -1,10 +1,10 @@
 <?php
 
-namespace takamoriyamashiro\Blayn\Tests;
+namespace yamaaaaaa\Blayn\Tests;
 
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
-use takamoriyamashiro\Blayn\BlaynMail;
+use yamaaaaaa\Blayn\BlaynMail;
 
 class BlaynMailTest extends TestCase
 {

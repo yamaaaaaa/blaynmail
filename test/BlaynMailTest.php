@@ -69,6 +69,7 @@ class BlaynMailTest extends TestCase
 		$this->assertFalse($result);
 		
 		$retult = $this->bm->addUser($email, $group);
+		echo $retult;
 		$this->assertTrue(is_numeric($retult));
 	}
 	
@@ -78,7 +79,7 @@ class BlaynMailTest extends TestCase
 		$this->login();
 		$id = getenv('BLAYNMAIL_USER_ID');
 		$email = getenv('BLAYNMAIL_EMAIL');
-		$result = $this->bm->changeStatus($id, BlaynMail::STATUS_ERROR_TEISHI);
+		$result = $this->bm->changeStatus($id, BlaynMail::STATUS_HAISHIN);
 		$this->assertTrue(is_numeric($result));
 	}
 	
@@ -89,10 +90,12 @@ class BlaynMailTest extends TestCase
 		echo "\n";
 		
 		$result1 = $this->bm->search();
+//		var_dump($result1[0]);
 		$this->assertTrue(isset($result1[0]['contactID']));
 		$this->assertTrue(isset($result1[0]['c15']));
 //		echo print_r($result1[0],true);
-		
+//		return;
+//		
 		
 		$result2 = $this->bm->search([
 			'order' => 'ASC',
@@ -110,12 +113,11 @@ class BlaynMailTest extends TestCase
 		
 		
 		$result4 = $this->bm->search([
-			'keywords' => ['yamashiro', 'tamagusuku'], //OR検索になる
+			'keywords' => ['test04'], 
 		]);
-//		echo "<pre>" . print_r($result4, true) . "</pre>";
+		echo "<pre>" . print_r($result4, true) . "</pre>";
 		$this->assertTrue(
-			preg_match('/yamashiro/', $result4[0]['c15']) == 1 ||
-			preg_match('/tamagusuku/', $result4[0]['c15']) == 1
+			preg_match('/test04/', $result4[0]['c15']) == 1
 		);
 		
 		$result5 = $this->bm->search([
@@ -138,7 +140,6 @@ class BlaynMailTest extends TestCase
 		
 		$this->login();
 		$result = $this->bm->getGroups();
-		
 		$this->assertTrue(is_array($result));
 		$this->assertTrue(count($result) > 0);
 //		print_r($result);

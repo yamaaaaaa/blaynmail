@@ -2,36 +2,96 @@
 
 namespace yamaaaaaa\Blayn;
 
+
 class BlaynMail
 {
 	
 	const REQUEST_OPTIONS = ['encoding' => 'UTF-8', 'escaping' => 'markup'];
 	const SEARCH_LIMIT = 20;
 	
+	const MODE_XMLRPC = 'mode_xmlrpc';
+	const MODE_HTTPS = 'mode_https';
+	
 	private $access_token = false;
 	private $errors = [];
+	private $mode = '';
 	
-	
-	public function __construct($id, $password, $apikey)
+	public function __construct($id, $password, $apikey, $mode = 'mode_https')
 	{
-		$params = [$id, $password, $apikey];
-		$request = xmlrpc_encode_request('authenticate.login', $params, self::REQUEST_OPTIONS);
-		$context = $this->makeContext($request);
-		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
-		$response = xmlrpc_decode($file);
-		$this->access_token = $response;
+		$this->mode = $mode;
+		if ($this->mode == self::MODE_HTTPS) {
+			$response = $this->post('https://api.bme.jp/rest/1.0/authenticate/login', [
+				'username' => $id,
+				'password' => $password,
+				'api_key' => $apikey
+			]);
+			if (!isset($response->accessToken)) {
+				return false;
+			}
+			$this->access_token = $response->accessToken;
+		} else {
+			$params = [$id, $password, $apikey];
+			$request = xmlrpc_encode_request('authenticate.login', $params, self::REQUEST_OPTIONS);
+			$context = $this->makeContext($request);
+			$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
+			$response = xmlrpc_decode($file);
+			$this->access_token = $response;
+		}
 	}
+	
+	private function post($url, $params = [])
+	{
+		$request = new \HTTP_Request2($url);
+		try {
+			$request->setMethod(\HTTP_Request2::METHOD_POST);
+			foreach ($params as $key => $param) {
+				$request->addPostParameter($key, $param);
+			}
+			$request->addPostParameter('f', 'json');
+			$response = $request->send();
+			if (200 == $response->getStatus()) {
+				return json_decode($response->getBody());
+			} else {
+				return false;
+			}
+		} catch (HTTP_Request2_Exception $e) {
+			return flase;
+		}
+	}
+	
+	private function get($url, $params = [])
+	{
+		$request = new \HTTP_Request2($url);
+		
+		try {
+			$request->setMethod(\HTTP_Request2::METHOD_GET);
+			$response = $request->send();
+			if (200 == $response->getStatus()) {
+				return json_decode($response->getBody());
+			} else {
+				return false;
+			}
+		} catch (HTTP_Request2_Exception $e) {
+			return flase;
+		}
+	}
+	
 	
 	public function logout()
 	{
-		$params = [$this->access_token];
-		$request = xmlrpc_encode_request('authenticate.logout', $params, self::REQUEST_OPTIONS);
-		$context = $this->makeContext($request);
-		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
-		$response = xmlrpc_decode($file);
-		$this->access_token = false;
-		$this->errors = [];
-		return $response;
+		if ($this->mode == self::MODE_HTTPS) {
+			$response = $this->get('https://api.bme.jp/rest/1.0/authenticate/logout?access_token='.$this->access_token.'&f=json');
+			return true;
+		} else {
+			$params = [$this->access_token];
+			$request = xmlrpc_encode_request('authenticate.logout', $params, self::REQUEST_OPTIONS);
+			$context = $this->makeContext($request);
+			$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
+			$response = xmlrpc_decode($file);
+			$this->access_token = false;
+			$this->errors = [];
+			return $response;
+		}
 	}
 	
 	private function makeContext($request, $method = 'POST', $header = "Content-Type: text/xml")
@@ -248,7 +308,6 @@ class BlaynMail
 	}
 	
 	
-	
 	public function addMailNow($senderID, $groupID, $subject, $body)
 	{
 		
@@ -261,14 +320,13 @@ class BlaynMail
 			return false;
 		}
 		
-		$params = array($this->access_token, array('senderID' => $senderID, 'groupID' => $groupID, 'subject' => $subject,'textPart' => $body));
+		$params = [$this->access_token, ['senderID' => $senderID, 'groupID' => $groupID, 'subject' => $subject, 'textPart' => $body]];
 		$request = xmlrpc_encode_request('message.sendNowCreate', $params, self::REQUEST_OPTIONS);
 		$context = $this->makeContext($request);
 		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
 		$data = xmlrpc_decode($file);
 		return $data;
 	}
-	
 	
 	
 }

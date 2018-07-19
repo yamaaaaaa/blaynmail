@@ -47,9 +47,9 @@ class BlaynMailTest extends TestCase
 	{
 		
 		$this->loginError();
-		
+//
 		$this->login();
-		
+//		
 		$this->assertTrue($this->bm->logout());
 		
 	}

@@ -6,7 +6,8 @@ class BlaynMail
 {
 	
 	const REQUEST_OPTIONS = ['encoding' => 'UTF-8', 'escaping' => 'markup'];
-
+	const SEARCH_LIMIT = 20;
+	
 	private $access_token = false;
 	private $errors = [];
 	
@@ -119,6 +120,38 @@ class BlaynMail
 	public function getErrors(){
 		return $this->errors;
 	}
+	
+	
+	
+	
+	public function search($opt=[]){
+
+		$options = $opt + [
+				'keyword'=>'',
+				'status'=>'配信中',
+				'order'=>'DESC',
+				'page'=>1,
+				'limit'=>20
+			];
+		
+		$beginDate = "20110101T00:00:00";
+		$endDate = date('Ymd')."T23:59:59";
+		xmlrpc_set_type($beginDate, 'datetime');
+		xmlrpc_set_type($endDate, 'datetime');
+		
+		$options['offset'] = ((int)$options['page']-1) * $options['limit'];
+		
+		$params = array($this->access_token, array($options['keyword']),$options['status'], array(0, 10), array($beginDate, $endDate), 'error', $options['order'], $options['offset'], $options['limit']);
+		$request = xmlrpc_encode_request('contact.listSearch', $params, self::REQUEST_OPTIONS);
+		$context = $this->makeContext($request);
+		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
+		$data = xmlrpc_decode($file);
+		return $data;
+		
+		
+	}
+	
+	
 	
 	
 }

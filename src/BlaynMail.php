@@ -161,6 +161,17 @@ class BlaynMail
 		
 	}
 	
+	public function getGroups(){
+		
+		$params = array($this->access_token);
+		$request = xmlrpc_encode_request('group.listSearch', $params, self::REQUEST_OPTIONS);
+		$context = $this->makeContext($request);
+		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
+		$data = xmlrpc_decode($file);
+		return $data;		
+		
+	}
+	
 	
 	
 	

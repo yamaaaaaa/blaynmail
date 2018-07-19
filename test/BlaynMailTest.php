@@ -133,5 +133,17 @@ class BlaynMailTest extends TestCase
 		
 	}
 	
+	public function testGroups(){
+		
+		$this->login();
+		$result = $this->bm->getGroups();
+		
+		$this->assertTrue(is_array($result));
+		$this->assertTrue(count($result) > 0);
+//		print_r($result);
+		
+		
+	}
+	
 	
 }

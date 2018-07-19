@@ -127,12 +127,22 @@ class BlaynMail
 	public function search($opt=[]){
 
 		$options = $opt + [
-				'keyword'=>'',
+				'keywords'=>[],
 				'status'=>'配信中',
 				'order'=>'DESC',
 				'page'=>1,
 				'limit'=>20
 			];
+		
+		if(
+			!is_array($options['keywords']) ||
+			!is_string($options['status']) ||
+			!in_array(strtoupper($options['order']),['ASC','DESC']) ||
+			!is_numeric($options['page']) ||
+			!is_numeric($options['limit'])
+		){
+			return false;
+		}
 		
 		$beginDate = "20110101T00:00:00";
 		$endDate = date('Ymd')."T23:59:59";
@@ -141,7 +151,7 @@ class BlaynMail
 		
 		$options['offset'] = ((int)$options['page']-1) * $options['limit'];
 		
-		$params = array($this->access_token, array($options['keyword']),$options['status'], array(0, 10), array($beginDate, $endDate), 'error', $options['order'], $options['offset'], $options['limit']);
+		$params = array($this->access_token, $options['keywords'],$options['status'], array(0, 10), array($beginDate, $endDate), 'error', $options['order'], $options['offset'], $options['limit']);
 		$request = xmlrpc_encode_request('contact.listSearch', $params, self::REQUEST_OPTIONS);
 		$context = $this->makeContext($request);
 		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);

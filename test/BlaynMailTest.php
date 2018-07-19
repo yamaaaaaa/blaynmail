@@ -145,5 +145,34 @@ class BlaynMailTest extends TestCase
 		
 	}
 	
+	public function testHistory(){
+		
+		$this->login();
+		
+		$result = $this->bm->histoey([
+			'limit'=>5
+		]);
+		foreach($result as $key => $mail)
+			echo "\n".$mail['subject'];
+		$this->assertTrue(count($result) > 0);
+		
+		$result = $this->bm->histoey([
+			'page'=>100
+		]);
+		echo "\n-----------------------------------------------\n";
+		$this->assertTrue($result==[]);
+	}
+	
+	public function testReservation(){
+		$this->login();
+		
+		$result = $this->bm->reservation();
+		foreach($result as $key => $mail)
+			echo "\n".$mail['subject'];
+		$this->assertTrue(is_array($result));
+	}
+	
+	
+	
 	
 }

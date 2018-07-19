@@ -62,7 +62,7 @@ class BlaynMail
 		$context = $this->makeContext($request);
 		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
 		$data = xmlrpc_decode($file);
-		if($this->checkError($data)){
+		if ($this->checkError($data)) {
 			return false;
 		}
 		return $data;
@@ -75,104 +75,147 @@ class BlaynMail
 	const STATUS_SAKUJO = '削除';
 	const STATUS_ERROR_TEISHI = 'エラー停止';
 	
-	public function changeStatus($id,$status)
+	public function changeStatus($id, $status)
 	{
-		if(
+		if (
 			self::STATUS_HAISHIN != $status &&
 			self::STATUS_TEISHI != $status &&
 			self::STATUS_KAIJO != $status &&
 			self::STATUS_SAKUJO != $status &&
 			self::STATUS_ERROR_TEISHI != $status
-		){
+		) {
 			return false;
 		}
 		
-		$options = array('encoding' => 'UTF-8', 'escaping'=>'markup');
-		$params = array($this->access_token, (int)$id, array('status'=>$status));
+		$options = ['encoding' => 'UTF-8', 'escaping' => 'markup'];
+		$params = [$this->access_token, (int)$id, ['status' => $status]];
 		$request = xmlrpc_encode_request('contact.detailUpdate', $params, self::REQUEST_OPTIONS);
 		$context = $this->makeContext($request);
 		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
 		$data = xmlrpc_decode($file);
-		if($this->checkError($data)){
+		if ($this->checkError($data)) {
 			return false;
 		}
 		return $data;
 	}
 	
 	
-	private function checkError($data){
-		if($data==-3) {
-			$this->errors[] = ['code'=>-3,'message'=>'アドレス重複'];
-			 return true;
-		}else if($data==-2) {
-			$this->errors[] = ['code'=>-2,'message'=>'登録上限'];
+	private function checkError($data)
+	{
+		if ($data == -3) {
+			$this->errors[] = ['code' => -3, 'message' => 'アドレス重複'];
 			return true;
-		}else if($data==-1) {
-			$this->errors[] = ['code'=>-1,'message'=>'パラメータ不正'];
+		} else if ($data == -2) {
+			$this->errors[] = ['code' => -2, 'message' => '登録上限'];
 			return true;
-		}else if($data==0) {
-			$this->errors[] = ['code'=>0,'message'=>'登録処理に失敗'];
+		} else if ($data == -1) {
+			$this->errors[] = ['code' => -1, 'message' => 'パラメータ不正'];
+			return true;
+		} else if ($data == 0) {
+			$this->errors[] = ['code' => 0, 'message' => '登録処理に失敗'];
 			return true;
 		}
 		return false;
 	}
 	
-	public function getErrors(){
+	public function getErrors()
+	{
 		return $this->errors;
 	}
 	
 	
-	
-	
-	public function search($opt=[]){
-
+	public function search($opt = [])
+	{
+		
 		$options = $opt + [
-				'keywords'=>[],
-				'status'=>'配信中',
-				'order'=>'DESC',
-				'page'=>1,
-				'limit'=>20
+				'keywords' => [],
+				'status' => '配信中',
+				'order' => 'DESC',
+				'page' => 1,
+				'limit' => 20
 			];
 		
-		if(
+		if (
 			!is_array($options['keywords']) ||
 			!is_string($options['status']) ||
-			!in_array(strtoupper($options['order']),['ASC','DESC']) ||
+			!in_array(strtoupper($options['order']), ['ASC', 'DESC']) ||
 			!is_numeric($options['page']) ||
 			!is_numeric($options['limit'])
-		){
+		) {
 			return false;
 		}
 		
 		$beginDate = "20110101T00:00:00";
-		$endDate = date('Ymd')."T23:59:59";
+		$endDate = date('Ymd') . "T23:59:59";
 		xmlrpc_set_type($beginDate, 'datetime');
 		xmlrpc_set_type($endDate, 'datetime');
 		
-		$options['offset'] = ((int)$options['page']-1) * $options['limit'];
+		$options['offset'] = ((int)$options['page'] - 1) * $options['limit'];
 		
-		$params = array($this->access_token, $options['keywords'],$options['status'], array(0, 10), array($beginDate, $endDate), 'error', $options['order'], $options['offset'], $options['limit']);
+		$params = [$this->access_token, $options['keywords'], $options['status'], [0, 10], [$beginDate, $endDate], 'error', $options['order'], $options['offset'], $options['limit']];
 		$request = xmlrpc_encode_request('contact.listSearch', $params, self::REQUEST_OPTIONS);
 		$context = $this->makeContext($request);
 		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
 		$data = xmlrpc_decode($file);
 		return $data;
 		
+	}
+	
+	public function histoey($opt=[])
+	{
+		
+		$options = $opt + [
+				'page' => 1,
+				'limit' => 20
+			];
+		
+		if (
+			!is_numeric($options['page']) ||
+			!is_numeric($options['limit'])
+		) {
+			return false;
+		}
+		
+		$beginDate = "20110101T00:00:00";
+		$endDate = date('Ymd') . "T23:59:59";
+		xmlrpc_set_type($beginDate, 'datetime');
+		xmlrpc_set_type($endDate, 'datetime');
+		
+		$options['offset'] = ((int)$options['page'] - 1) * $options['limit'];
+		
+		$params = [$this->access_token, [], [], [$beginDate, $endDate], $options['offset'], $options['limit']];
+		$request = xmlrpc_encode_request('message.historySearch', $params, $options);
+		$context = $this->makeContext($request);
+		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
+		$data = xmlrpc_decode($file);
+		return $data;
 		
 	}
 	
-	public function getGroups(){
+	public function reservation()
+	{
 		
-		$params = array($this->access_token);
+		$params = [$this->access_token];
+		$request = xmlrpc_encode_request('message.reservationSearch', $params, self::REQUEST_OPTIONS);
+		$context = $this->makeContext($request);
+		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
+		$data = xmlrpc_decode($file);
+		print_r($data);
+		
+	}
+	
+	
+	public function getGroups()
+	{
+		
+		$params = [$this->access_token];
 		$request = xmlrpc_encode_request('group.listSearch', $params, self::REQUEST_OPTIONS);
 		$context = $this->makeContext($request);
 		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
 		$data = xmlrpc_decode($file);
-		return $data;		
+		return $data;
 		
 	}
-	
-	
 	
 	
 }

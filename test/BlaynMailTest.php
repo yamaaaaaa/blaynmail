@@ -13,6 +13,7 @@ class BlaynMailTest extends TestCase
 	
 	public function setUp()
 	{
+		date_default_timezone_set('Asia/Tokyo');
 		$dotenv = new Dotenv(dirname(__DIR__));
 		$dotenv->load();
 		
@@ -142,7 +143,6 @@ class BlaynMailTest extends TestCase
 		$this->assertTrue(count($result) > 0);
 //		print_r($result);
 		
-		
 	}
 	
 	public function testHistory(){
@@ -170,6 +170,40 @@ class BlaynMailTest extends TestCase
 		foreach($result as $key => $mail)
 			echo "\n".$mail['subject'];
 		$this->assertTrue(is_array($result));
+	}
+	
+	public function testAddMailReserve(){
+		
+		echo "\n";
+		
+		$this->login();
+		$time = time() + (60*60);//1時間後
+		$scheduleDate = date('Ymd', $time) . 'T' . date('H:i:s', $time);
+		$senderID = (int)getenv('BLAYNMAIL_SENDER_ID');
+		$groupID = (int)getenv('BLAYNMAIL_GROUP_ID');
+		$subject = '【テスト配信】これはテスト配信です。(返信不要)';
+		$body = "これはテスト配信です。\n返信不要ですのでそのまま破棄して頂ますようよろしくお願い致します。";
+		
+		$result = $this->bm->addMailReserve($scheduleDate,$senderID,$groupID,$subject,$body);
+		var_dump($result);
+		$this->assertTrue(is_numeric($result));
+		
+	}
+	
+	public function testAddMailNow(){
+		echo "\n";
+		
+		$this->login();
+		$senderID = (int)getenv('BLAYNMAIL_SENDER_ID');
+		$groupID = (int)getenv('BLAYNMAIL_GROUP_ID');
+		$subject = '【テスト配信】これはテスト配信です。(返信不要)';
+		$body = "これはテスト配信です。\n返信不要ですのでそのまま破棄して頂ますようよろしくお願い致します。";
+		
+		$result = $this->bm->addMailNow($senderID,$groupID,$subject,$body);
+		var_dump($result);
+		$this->assertTrue(is_numeric($result));
+		
+		
 	}
 	
 	

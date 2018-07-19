@@ -161,7 +161,7 @@ class BlaynMail
 		
 	}
 	
-	public function histoey($opt=[])
+	public function histoey($opt = [])
 	{
 		
 		$options = $opt + [
@@ -216,6 +216,59 @@ class BlaynMail
 		return $data;
 		
 	}
+	
+	
+	public function addMailReserve($scheduleDate, $senderID, $groupID, $subject, $body)
+	{
+		
+		if (
+			!$this->validateDateFormat($scheduleDate) ||
+			!is_numeric($senderID) ||
+			!is_numeric($groupID) ||
+			!is_string($subject) || $subject == '' ||
+			!is_string($body) || $body == ''
+		) {
+			return false;
+		}
+		
+		
+		xmlrpc_set_type($scheduleDate, 'datetime');
+		$params = [$this->access_token, ['senderID' => $senderID, 'groupID' => $groupID, 'subject' => $subject, 'textPart' => $body], $scheduleDate];
+		$request = xmlrpc_encode_request('message.scheduleCreate', $params, self::REQUEST_OPTIONS);
+		$context = $this->makeContext($request);
+		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
+		$data = xmlrpc_decode($file);
+		return $data;
+	}
+	
+	public function validateDateFormat($datetime)
+	{
+		$time = strtotime($datetime);
+		return $datetime === date('Ymd', $time) . 'T' . date('H:i:s', $time);
+	}
+	
+	
+	
+	public function addMailNow($senderID, $groupID, $subject, $body)
+	{
+		
+		if (
+			!is_numeric($senderID) ||
+			!is_numeric($groupID) ||
+			!is_string($subject) || $subject == '' ||
+			!is_string($body) || $body == ''
+		) {
+			return false;
+		}
+		
+		$params = array($this->access_token, array('senderID' => $senderID, 'groupID' => $groupID, 'subject' => $subject,'textPart' => $body));
+		$request = xmlrpc_encode_request('message.sendNowCreate', $params, self::REQUEST_OPTIONS);
+		$context = $this->makeContext($request);
+		$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
+		$data = xmlrpc_decode($file);
+		return $data;
+	}
+	
 	
 	
 }

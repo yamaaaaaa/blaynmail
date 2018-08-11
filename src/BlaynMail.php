@@ -479,14 +479,5 @@ class BlaynMail
 			
 	}
 	
-	public function updateMail(){
-		
-		
-		
-		
-		
-		
-	}
-	
 	
 }

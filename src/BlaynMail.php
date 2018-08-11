@@ -5,7 +5,7 @@ namespace yamaaaaaa\Blayn;
 
 class BlaynMail
 {
-	
+
 	const REQUEST_OPTIONS = ['encoding' => 'UTF-8', 'escaping' => 'markup'];
 	const SEARCH_LIMIT = 20;
 	
@@ -180,6 +180,8 @@ class BlaynMail
 		}
 	}
 	
+	
+	
 
 	
 	const STATUS_HAISHIN = '配信中';
@@ -226,6 +228,31 @@ class BlaynMail
 		}
 		
 	}
+	
+	public function updateEmail($id, $email)
+	{
+		
+		if ($this->mode == self::MODE_HTTPS) {
+			
+			$response = $this->post('https://api.bme.jp/rest/1.0/contact/detail/update', [
+				'access_token' => $this->access_token,
+				'contactID' => (int)$id,
+				'c15' => $email
+			]);
+			if (isset($response['contactID'])) {
+				return (int)$response['contactID'];
+			} else {
+				return false;
+			}
+		}else{
+			
+			exit('not support');
+			
+		}
+		
+	}
+	
+	
 	
 	
 	private function checkError($data)

@@ -71,6 +71,23 @@ class BlaynMailTest extends TestCase
 		
 		
 	}
+	public function testUpdateEmail()
+	{
+		
+		$this->login();
+		$email = getenv('BLAYNMAIL_EMAIL');
+		$id = getenv('BLAYNMAIL_USER_ID');
+		
+		echo "\n";
+		echo $id."\n";
+		echo $email."\n";
+		
+		$result = $this->bm->updateEmail($id,$email);
+		var_dump($result);
+		$this->assertTrue(is_numeric($result));
+		echo 'ID:'.$result."\n";
+		
+	}
 	
 	public function testAddUser()
 	{

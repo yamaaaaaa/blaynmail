@@ -162,6 +162,25 @@ class BlaynMail
 		}
 	}
 	
+	public function findByEmail($email)
+	{
+		if (empty($email) || $this->access_token === false) {
+			return false;
+		}
+		if ($this->mode == self::MODE_HTTPS) {
+			$url = "https://api.bme.jp/rest/1.0/contact/detail/search?access_token={$this->access_token}&email=" . urlencode($email).'&f=json';
+			$response = $this->get($url);
+			if (isset($response['contactID'])) {
+				return (int)$response['contactID'];
+			} else {
+				return false;
+			}
+		} else {
+			exit('not support.');
+		}
+	}
+	
+
 	
 	const STATUS_HAISHIN = '配信中';
 	const STATUS_TEISHI = '配信停止';
@@ -458,6 +477,15 @@ class BlaynMail
 			return $data;
 		}
 			
+	}
+	
+	public function updateMail(){
+		
+		
+		
+		
+		
+		
 	}
 	
 	

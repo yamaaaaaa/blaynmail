@@ -230,6 +230,18 @@ class BlaynMailTest extends TestCase
 		
 	}
 	
+	public function testDelMailReserve()
+	{
+		
+		echo "\n";
+		$this->login();
+		$id = getenv('BLAYNMAIL_DEL_MESSAGE_ID');
+		$result = $this->bm->delMailReserve($id);
+		$this->assertTrue(is_numeric($result));
+		
+	}
+	
+	
 	public function testAddMailNow()
 	{
 		echo "\n";

@@ -2,10 +2,9 @@
 
 namespace yamaaaaaa\Blayn;
 
-
 class BlaynMail
 {
-
+	
 	const REQUEST_OPTIONS = ['encoding' => 'UTF-8', 'escaping' => 'markup'];
 	const SEARCH_LIMIT = 20;
 	
@@ -56,15 +55,16 @@ class BlaynMail
 			}
 			$request->addPostParameter('f', 'json');
 			$response = $request->send();
+			
 			if (200 == $response->getStatus()) {
 				$body = $response->getBody();
-				if(preg_match('/^<\?xml/',$body)){
+				if (preg_match('/^<\?xml/', $body)) {
 					$xml = simplexml_load_string($body);
 					$json = json_encode($xml);
-					$array = json_decode($json,true);
+					$array = json_decode($json, true);
 					return $array;
-				}else{
-					return json_decode($body,true);	
+				} else {
+					return json_decode($body, true);
 				}
 			} else {
 				return false;
@@ -85,7 +85,7 @@ class BlaynMail
 			$request->setMethod(\HTTP_Request2::METHOD_GET);
 			$response = $request->send();
 			if (200 == $response->getStatus()) {
-				return json_decode($response->getBody(),true);
+				return json_decode($response->getBody(), true);
 			} else {
 				return false;
 			}
@@ -98,7 +98,7 @@ class BlaynMail
 	public function logout()
 	{
 		if ($this->mode == self::MODE_HTTPS) {
-			$response = $this->get('https://api.bme.jp/rest/1.0/authenticate/logout?access_token='.$this->access_token.'&f=json');
+			$response = $this->get('https://api.bme.jp/rest/1.0/authenticate/logout?access_token=' . $this->access_token . '&f=json');
 			return true;
 		} else {
 			$params = [$this->access_token];
@@ -143,9 +143,9 @@ class BlaynMail
 				'c15' => $email,
 				'c21' => $group
 			]);
-			if(isset($response["contactID"])){
+			if (isset($response["contactID"])) {
 				return (int)$response["contactID"];
-			}else{
+			} else {
 				return false;
 			}
 		} else {
@@ -168,7 +168,7 @@ class BlaynMail
 			return false;
 		}
 		if ($this->mode == self::MODE_HTTPS) {
-			$url = "https://api.bme.jp/rest/1.0/contact/detail/search?access_token={$this->access_token}&email=" . urlencode($email).'&f=json';
+			$url = "https://api.bme.jp/rest/1.0/contact/detail/search?access_token={$this->access_token}&email=" . urlencode($email) . '&f=json';
 			$response = $this->get($url);
 			if (isset($response['contactID'])) {
 				return (int)$response['contactID'];
@@ -180,9 +180,6 @@ class BlaynMail
 		}
 	}
 	
-	
-	
-
 	
 	const STATUS_HAISHIN = '配信中';
 	const STATUS_TEISHI = '配信停止';
@@ -214,7 +211,7 @@ class BlaynMail
 			} else {
 				return false;
 			}
-		}else{
+		} else {
 			$options = ['encoding' => 'UTF-8', 'escaping' => 'markup'];
 			$params = [$this->access_token, (int)$id, ['status' => $status]];
 			$request = xmlrpc_encode_request('contact.detailUpdate', $params, self::REQUEST_OPTIONS);
@@ -244,15 +241,13 @@ class BlaynMail
 			} else {
 				return false;
 			}
-		}else{
+		} else {
 			
 			exit('not support');
 			
 		}
 		
 	}
-	
-	
 	
 	
 	private function checkError($data)
@@ -309,21 +304,21 @@ class BlaynMail
 		
 		if ($this->mode == self::MODE_HTTPS) {
 			$url = "https://api.bme.jp/rest/1.0/contact/list/search?";
-			$url.= "access_token=".$this->access_token;
-			$url.= "&keywords=" . urlencode(implode(' ',$options['keywords']));
-			$url.= "&status=" . urlencode($options['status']);
-			$url.= "&beginError=0&endError=10";
-			$url.= "&beginDate=" . urlencode($beginDate);
-			$url.= "&endDate=" . urlencode($endDate);
-			$url.= "&orderBy=error&sortOrder=".$options['order'];
-			$url.= "&offset=".$options['offset'];
-			$url.= "&limit=".$options['limit'];
-			$url.= "&f=json";			
+			$url .= "access_token=" . $this->access_token;
+			$url .= "&keywords=" . urlencode(implode(' ', $options['keywords']));
+			$url .= "&status=" . urlencode($options['status']);
+			$url .= "&beginError=0&endError=10";
+			$url .= "&beginDate=" . urlencode($beginDate);
+			$url .= "&endDate=" . urlencode($endDate);
+			$url .= "&orderBy=error&sortOrder=" . $options['order'];
+			$url .= "&offset=" . $options['offset'];
+			$url .= "&limit=" . $options['limit'];
+			$url .= "&f=json";
 			$result = $this->get($url);
 			
 			return $result['contacts'] ?? false;
 			
-		}else{
+		} else {
 			xmlrpc_set_type($beginDate, 'datetime');
 			xmlrpc_set_type($endDate, 'datetime');
 			
@@ -333,7 +328,7 @@ class BlaynMail
 			$file = file_get_contents("https://api.bme.jp/xmlrpc/1.0", false, $context);
 			$data = xmlrpc_decode($file);
 			return $data;
-		}			
+		}
 		
 	}
 	
@@ -359,14 +354,14 @@ class BlaynMail
 		if ($this->mode == self::MODE_HTTPS) {
 			
 			$url = "https://api.bme.jp/rest/1.0/message/history/search?";
-			$url.= "access_token=".$this->access_token;
-			$url.= "&subjects=";
-			$url.= "&groups=";
-			$url.= "&beginDate=" . urlencode($beginDate);
-			$url.= "&endDate=" . urlencode($endDate);
-			$url.= "&offset=".$options['offset'];
-			$url.= "&limit=".$options['limit'];
-			$url.= "&f=json";
+			$url .= "access_token=" . $this->access_token;
+			$url .= "&subjects=";
+			$url .= "&groups=";
+			$url .= "&beginDate=" . urlencode($beginDate);
+			$url .= "&endDate=" . urlencode($endDate);
+			$url .= "&offset=" . $options['offset'];
+			$url .= "&limit=" . $options['limit'];
+			$url .= "&f=json";
 			$result = $this->get($url);
 			return $result['message'] ?? false;
 			
@@ -392,12 +387,12 @@ class BlaynMail
 		if ($this->mode == self::MODE_HTTPS) {
 			
 			$url = "https://api.bme.jp/rest/1.0/message/reservation/search?";
-			$url.= "access_token=".$this->access_token;
-			$url.= "&f=json";
+			$url .= "access_token=" . $this->access_token;
+			$url .= "&f=json";
 			$result = $this->get($url);
 			return $result['message'] ?? false;
 			
-		}else{
+		} else {
 			$params = [$this->access_token];
 			$request = xmlrpc_encode_request('message.reservationSearch', $params, self::REQUEST_OPTIONS);
 			$context = $this->makeContext($request);
@@ -413,7 +408,7 @@ class BlaynMail
 	{
 		
 		if ($this->mode == self::MODE_HTTPS) {
-			$response = $this->get('https://api.bme.jp/rest/1.0/group/list/search?access_token='.$this->access_token.'&f=json');
+			$response = $this->get('https://api.bme.jp/rest/1.0/group/list/search?access_token=' . $this->access_token . '&f=json');
 			return $response['group'] ?? false;
 		} else {
 			$params = [$this->access_token];
@@ -442,17 +437,17 @@ class BlaynMail
 		if ($this->mode == self::MODE_HTTPS) {
 			
 			$response = $this->post('https://api.bme.jp/rest/1.0/message/schedule/create', [
-				'access_token'=>$this->access_token,
-				'senderID'=>$senderID,
-				'groupID'=>$groupID,
-				'subject'=>$subject,
-				'textPart'=>$body,
-				'scheduleDate'=> $scheduleDate
+				'access_token' => $this->access_token,
+				'senderID' => $senderID,
+				'groupID' => $groupID,
+				'subject' => $subject,
+				'textPart' => $body,
+				'scheduleDate' => $scheduleDate
 			]);
 			return $response['messageID'] ?? false;
 			
 			
-		}else{
+		} else {
 			xmlrpc_set_type($scheduleDate, 'datetime');
 			$params = [$this->access_token, ['senderID' => $senderID, 'groupID' => $groupID, 'subject' => $subject, 'textPart' => $body], $scheduleDate];
 			$request = xmlrpc_encode_request('message.scheduleCreate', $params, self::REQUEST_OPTIONS);
@@ -462,6 +457,26 @@ class BlaynMail
 			return $data;
 		}
 	}
+	
+	public function delMailReserve($id)
+	{
+		
+		if ($this->mode == self::MODE_HTTPS) {
+			$response = $this->post("https://api.bme.jp/rest/1.0/message/list/delete", [
+				'access_token' => $this->access_token,
+				'messageIDs' => $id
+			]);
+			
+			if (!empty($response['success'])) {
+				return (int)$response['success'];
+			} else {
+				return false;
+			}
+		} else {
+			exit('not support.');
+		}
+	}
+	
 	
 	public function validateDateFormat($datetime)
 	{
@@ -483,7 +498,6 @@ class BlaynMail
 		}
 		
 		
-		
 		if ($this->mode == self::MODE_HTTPS) {
 			
 			$response = $this->post('https://api.bme.jp/rest/1.0/message/sendnow/create', [
@@ -495,7 +509,7 @@ class BlaynMail
 			]);
 			return $response['messageID'] ?? false;
 			
-		}else{
+		} else {
 			$params = [$this->access_token, ['senderID' => $senderID, 'groupID' => $groupID, 'subject' => $subject, 'textPart' => $body]];
 			$request = xmlrpc_encode_request('message.sendNowCreate', $params, self::REQUEST_OPTIONS);
 			$context = $this->makeContext($request);
@@ -503,7 +517,7 @@ class BlaynMail
 			$data = xmlrpc_decode($file);
 			return $data;
 		}
-			
+		
 	}
 	
 	

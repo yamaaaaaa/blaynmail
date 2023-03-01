@@ -180,6 +180,24 @@ class BlaynMail
 		}
 	}
 	
+	public function delUser($id)
+	{
+		if ($this->mode == self::MODE_HTTPS) {
+			//通常削除
+			$response = $this->post("https://api.bme.jp/rest/1.0/contact/list/delete", [
+				'access_token' => $this->access_token,
+				'contactIDs' => $id
+			]);
+			//ゴミ箱から削除
+			$response = $this->post("https://api.bme.jp/rest/1.0/contact/trash/delete", [
+				'access_token' => $this->access_token,
+				'contactIDs' => $id
+			]);
+			return true;
+		} else {
+			exit('not support.');
+		}
+	}
 	
 	const STATUS_HAISHIN = '配信中';
 	const STATUS_TEISHI = '配信停止';

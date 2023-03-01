@@ -11,21 +11,20 @@ class BlaynMailTest extends TestCase
 	
 	private $bm;
 	
-	public function setUp()
+	public function setUp() :void
 	{
 		date_default_timezone_set('Asia/Tokyo');
-		$dotenv = new Dotenv(dirname(__DIR__));
+		$dotenv = Dotenv::createImmutable(dirname(__DIR__).'/');
 		$dotenv->load();
-		
 	}
 	
 	private function login()
 	{
 		if (empty($this->bm)) {
 			$this->bm = new BlaynMail(
-				getenv('BLAYNMAIL_ID'),
-				getenv('BLAYNMAIL_PASSWORD'),
-				getenv('BLAYNMAIL_APIKEY')
+				$_ENV['BLAYNMAIL_ID'],
+				$_ENV['BLAYNMAIL_PASSWORD'],
+				$_ENV['BLAYNMAIL_APIKEY']
 			);
 			$this->assertTrue(!empty($this->bm->getToken()));
 		}
@@ -35,8 +34,8 @@ class BlaynMailTest extends TestCase
 	{
 		
 		$this->bm = new BlaynMail(
-			getenv('BLAYNMAIL_ID'),
-			getenv('BLAYNMAIL_PASSWORD'),
+			$_ENV['BLAYNMAIL_ID'],
+			$_ENV['BLAYNMAIL_PASSWORD'],
 			'xxxxxxxxxxxxxxx'
 		);
 		$this->assertTrue($this->bm->getToken() == 0);
@@ -59,7 +58,7 @@ class BlaynMailTest extends TestCase
 	{
 		
 		$this->login();
-		$email = getenv('BLAYNMAIL_EMAIL');
+		$email = $_ENV['BLAYNMAIL_EMAIL'];
 		
 		echo "\n";
 		echo $email."\n";
@@ -75,8 +74,8 @@ class BlaynMailTest extends TestCase
 	{
 		
 		$this->login();
-		$email = getenv('BLAYNMAIL_EMAIL');
-		$id = getenv('BLAYNMAIL_USER_ID');
+		$email = $_ENV['BLAYNMAIL_EMAIL'];
+		$id = $_ENV['BLAYNMAIL_USER_ID'];
 		
 		echo "\n";
 		echo $id."\n";
@@ -94,8 +93,8 @@ class BlaynMailTest extends TestCase
 		
 		$this->login();
 		
-		$email = getenv('BLAYNMAIL_EMAIL');
-		$group = getenv('BLAYNMAIL_GROUP');
+		$email = $_ENV['BLAYNMAIL_EMAIL'];
+		$group = $_ENV['BLAYNMAIL_GROUP'];
 		
 		$result = $this->bm->addUser($email, false);
 		$this->assertFalse($result);
@@ -108,12 +107,22 @@ class BlaynMailTest extends TestCase
 		$this->assertTrue(is_numeric($retult));
 	}
 	
+	public function testDelUser()
+	{
+		$this->login();
+		$email = $_ENV['BLAYNMAIL_DEL_EMAIL'];
+		$this->assertEquals($email,'01test@yama-lab.com');
+		$id = $this->bm->findByEmail($email);
+		$result = $this->bm->delUser($id);
+		$this->assertTrue($result);
+	}
+	
 	
 	public function testChangeStatus()
 	{
 		$this->login();
-		$id = getenv('BLAYNMAIL_USER_ID');
-		$email = getenv('BLAYNMAIL_EMAIL');
+		$id = $_ENV['BLAYNMAIL_USER_ID'];
+		$email = $_ENV['BLAYNMAIL_EMAIL'];
 		$result = $this->bm->changeStatus($id, BlaynMail::STATUS_HAISHIN);
 		$this->assertTrue(is_numeric($result));
 	}
@@ -219,8 +228,8 @@ class BlaynMailTest extends TestCase
 		$this->login();
 		$time = time() + (60 * 60);//1時間後
 		$scheduleDate = date('Ymd', $time) . 'T' . date('H:i:s', $time);
-		$senderID = (int)getenv('BLAYNMAIL_SENDER_ID');
-		$groupID = (int)getenv('BLAYNMAIL_GROUP_ID');
+		$senderID = (int)$_ENV['BLAYNMAIL_SENDER_ID'];
+		$groupID = (int)$_ENV['BLAYNMAIL_GROUP_ID'];
 		$subject = '【テスト配信】これはテスト配信です。(返信不要)';
 		$body = "これはテスト配信です。\n返信不要ですのでそのまま破棄して頂ますようよろしくお願い致します。";
 		
@@ -235,7 +244,7 @@ class BlaynMailTest extends TestCase
 		
 		echo "\n";
 		$this->login();
-		$id = getenv('BLAYNMAIL_DEL_MESSAGE_ID');
+		$id = $_ENV['BLAYNMAIL_DEL_MESSAGE_ID'];
 		$result = $this->bm->delMailReserve($id);
 		$this->assertTrue(is_numeric($result));
 		
@@ -247,8 +256,8 @@ class BlaynMailTest extends TestCase
 		echo "\n";
 		
 		$this->login();
-		$senderID = (int)getenv('BLAYNMAIL_SENDER_ID');
-		$groupID = (int)getenv('BLAYNMAIL_GROUP_ID');
+		$senderID = (int)$_ENV['BLAYNMAIL_SENDER_ID'];
+		$groupID = (int)$_ENV['BLAYNMAIL_GROUP_ID'];
 		$subject = '【テスト配信】これはテスト配信です。(返信不要)';
 		$body = "これはテスト配信です。\n返信不要ですのでそのまま破棄して頂ますようよろしくお願い致します。";
 		

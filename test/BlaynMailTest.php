@@ -11,10 +11,10 @@ class BlaynMailTest extends TestCase
 	
 	private $bm;
 	
-	public function setUp() :void
+	public function setUp(): void
 	{
 		date_default_timezone_set('Asia/Tokyo');
-		$dotenv = Dotenv::createImmutable(dirname(__DIR__).'/');
+		$dotenv = Dotenv::createImmutable(dirname(__DIR__) . '/');
 		$dotenv->load();
 	}
 	
@@ -22,9 +22,9 @@ class BlaynMailTest extends TestCase
 	{
 		if (empty($this->bm)) {
 			$this->bm = new BlaynMail(
-				$_ENV['BLAYNMAIL_ID'],
-				$_ENV['BLAYNMAIL_PASSWORD'],
-				$_ENV['BLAYNMAIL_APIKEY']
+					$_ENV['BLAYNMAIL_ID'],
+					$_ENV['BLAYNMAIL_PASSWORD'],
+					$_ENV['BLAYNMAIL_APIKEY']
 			);
 			$this->assertTrue(!empty($this->bm->getToken()));
 		}
@@ -34,9 +34,9 @@ class BlaynMailTest extends TestCase
 	{
 		
 		$this->bm = new BlaynMail(
-			$_ENV['BLAYNMAIL_ID'],
-			$_ENV['BLAYNMAIL_PASSWORD'],
-			'xxxxxxxxxxxxxxx'
+				$_ENV['BLAYNMAIL_ID'],
+				$_ENV['BLAYNMAIL_PASSWORD'],
+				'xxxxxxxxxxxxxxx'
 		);
 		$this->assertTrue($this->bm->getToken() == 0);
 	}
@@ -44,11 +44,9 @@ class BlaynMailTest extends TestCase
 	
 	public function testConnect()
 	{
-		
-		$this->loginError();
+//		$this->loginError();
 //
 		$this->login();
-//		
 		$this->assertTrue($this->bm->logout());
 		
 	}
@@ -61,15 +59,16 @@ class BlaynMailTest extends TestCase
 		$email = $_ENV['BLAYNMAIL_EMAIL'];
 		
 		echo "\n";
-		echo $email."\n";
+		echo $email . "\n";
 		
 		$result = $this->bm->findByEmail($email);
 		$this->assertTrue(is_numeric($result));
 		var_dump($result);
-		echo 'ID:'.$result."\n";
+		echo 'ID:' . $result . "\n";
 		
 		
 	}
+	
 	public function testUpdateEmail()
 	{
 		
@@ -78,13 +77,13 @@ class BlaynMailTest extends TestCase
 		$id = $_ENV['BLAYNMAIL_USER_ID'];
 		
 		echo "\n";
-		echo $id."\n";
-		echo $email."\n";
+		echo $id . "\n";
+		echo $email . "\n";
 		
-		$result = $this->bm->updateEmail($id,$email);
+		$result = $this->bm->updateEmail($id, $email);
 		var_dump($result);
 		$this->assertTrue(is_numeric($result));
-		echo 'ID:'.$result."\n";
+		echo 'ID:' . $result . "\n";
 		
 	}
 	
@@ -106,12 +105,31 @@ class BlaynMailTest extends TestCase
 		echo $retult;
 		$this->assertTrue(is_numeric($retult));
 	}
+	public function testAddUserCustom()
+	{
+		
+		$this->login();
+		
+		//keyは契約に合わせてまちまち
+		$params = [
+				$_ENV['BLAYNMAIL_EMAIL_CODE'] => '02test@yama-lab.com',
+				$_ENV['BLAYNMAIL_NAME_CODE'] => 'テスト002',
+				$_ENV['BLAYNMAIL_AGE_CODE'] => '20代',
+				$_ENV['BLAYNMAIL_LOCATION_CODE'] => '宜野湾市',
+		];
+		
+//		echo "<pre>".print_r($params,true)."</pre>";exit;
+		
+		$result = $this->bm->addUserCustom($params);
+		echo $retult;exit;
+		$this->assertTrue(is_numeric($retult));
+	}
 	
 	public function testDelUser()
 	{
 		$this->login();
 		$email = $_ENV['BLAYNMAIL_DEL_EMAIL'];
-		$this->assertEquals($email,'01test@yama-lab.com');
+		$this->assertEquals($email, '01test@yama-lab.com');
 		$id = $this->bm->findByEmail($email);
 		$result = $this->bm->delUser($id);
 		$this->assertTrue($result);
@@ -142,14 +160,14 @@ class BlaynMailTest extends TestCase
 //		
 		
 		$result2 = $this->bm->search([
-			'order' => 'ASC',
+				'order' => 'ASC',
 		]);
 		$this->assertTrue($result1[0]['c15'] != $result2[0]['c15']);
 //		echo print_r($result2[0],true);
 		
 		$result3 = $this->bm->search([
-			'keywords' => ['oka'],
-			'limit' => 1
+				'keywords' => ['oka'],
+				'limit' => 1
 		]);
 //		echo print_r($result3[0],true);
 		$this->assertTrue(count($result3) == 1);
@@ -157,22 +175,22 @@ class BlaynMailTest extends TestCase
 		
 		
 		$result4 = $this->bm->search([
-			'keywords' => ['test04'],
+				'keywords' => ['test04'],
 		]);
 		echo "<pre>" . print_r($result4, true) . "</pre>";
 		$this->assertTrue(
-			preg_match('/test04/', $result4[0]['c15']) == 1
+				preg_match('/test04/', $result4[0]['c15']) == 1
 		);
 		
 		$result5 = $this->bm->search([
-			'keywords' => 'xxxxxxxxxxxxxxxxxxxldskfljsdifuwoeiruwer',
+				'keywords' => 'xxxxxxxxxxxxxxxxxxxldskfljsdifuwoeiruwer',
 		]);
 		$this->assertFalse($result5);
 		
 		
 		$result6 = $this->bm->search([
-			'keywords' => ['yamashiro'],
-			'page' => 999
+				'keywords' => ['yamashiro'],
+				'page' => 999
 		]);
 //		print_r($result6);
 		$this->assertTrue($result6 == []);
@@ -187,7 +205,6 @@ class BlaynMailTest extends TestCase
 		$result = $this->bm->getGroups();
 		$this->assertTrue(is_array($result));
 		$this->assertTrue(count($result) > 0);
-//		print_r($result);
 		
 	}
 	
@@ -197,16 +214,17 @@ class BlaynMailTest extends TestCase
 		$this->login();
 		
 		$result = $this->bm->histoey([
-			'limit' => 5
+				'limit' => 5
 		]);
 		foreach ($result as $key => $mail)
 			echo "\n" . $mail['subject'];
 		$this->assertTrue(count($result) > 0);
 		
 		$result = $this->bm->histoey([
-			'page' => 100
+				'page' => 100
 		]);
 		echo "\n-----------------------------------------------\n";
+		
 		$this->assertTrue($result == []);
 	}
 	
@@ -217,6 +235,7 @@ class BlaynMailTest extends TestCase
 		$result = $this->bm->reservation();
 		foreach ($result as $key => $mail)
 			echo "\n" . $mail['subject'];
+		
 		$this->assertTrue(is_array($result));
 	}
 	

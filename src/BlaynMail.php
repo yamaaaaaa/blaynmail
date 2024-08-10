@@ -129,6 +129,21 @@ class BlaynMail
 		return $this->access_token;
 	}
 	
+	public function addUserCustom($params){
+		if ($this->access_token === false) {
+			return false;
+		}
+		
+		$params['access_token'] = $this->access_token; 
+		if ($this->mode == self::MODE_HTTPS) {
+			$response = $this->post('https://api.bme.jp/rest/1.0/contact/detail/create', $params);
+			if (isset($response["contactID"])) {
+				return (int)$response["contactID"];
+			} else {
+				return false;
+			}
+		}
+	}
 	
 	public function addUser($email, $group)
 	{
@@ -137,7 +152,6 @@ class BlaynMail
 		}
 		
 		if ($this->mode == self::MODE_HTTPS) {
-			
 			$response = $this->post('https://api.bme.jp/rest/1.0/contact/detail/create', [
 				'access_token' => $this->access_token,
 				'c15' => $email,

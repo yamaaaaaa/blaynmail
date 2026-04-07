@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=8.1.0",
-        "pear/http_request2": "^2.3"
+        "pear/http_request2": "^2.7"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
